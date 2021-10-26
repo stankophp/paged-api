@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\VacancyRequest;
 use App\Models\Vacancy;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use \Illuminate\Contracts\View\View;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class VacancyController extends Controller
@@ -16,31 +15,21 @@ class VacancyController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View|Response
+     * @return Response
      */
     public function index(Request $request)
     {
         $perPage = 2;
         $vacancies = DB::table('vacancies')->paginate($perPage);
 
-        return view('vacancies.index', compact(['vacancies']));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response|View
-     */
-    public function create()
-    {
-        return view('vacancies.create');
+        return response($vacancies, SymfonyResponse::HTTP_OK);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param VacancyRequest $request
-     * @return Response|RedirectResponse
+     * @return Response
      */
     public function store(VacancyRequest $request)
     {
@@ -51,32 +40,20 @@ class VacancyController extends Controller
             'salary' =>$request->input('salary'),
         ]);
 
-        return redirect(route('vacancies.index'));
+        return response($vacancy, SymfonyResponse::HTTP_ACCEPTED);
     }
 
     /**
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return Response|View
+     * @return Response
      */
     public function show(int $id)
     {
         $vacancy = Vacancy::findOrFail($id);
 
-        return view('vacancies.show', compact('vacancy'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response|View
-     */
-    public function edit($id)
-    {
-        $vacancy = Vacancy::findOrFail($id);
-        return view('vacancies.edit', compact('vacancy'));
+        return response($vacancy, SymfonyResponse::HTTP_OK);
     }
 
     /**
@@ -84,7 +61,7 @@ class VacancyController extends Controller
      *
      * @param VacancyRequest $request
      * @param  int  $id
-     * @return Response|RedirectResponse
+     * @return Response
      */
     public function update(VacancyRequest $request, $id)
     {
@@ -96,14 +73,14 @@ class VacancyController extends Controller
             'salary' =>$request->input('salary'),
         ]);
 
-        return redirect(route('vacancies.index'));
+        return response($vacancy, SymfonyResponse::HTTP_ACCEPTED);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return Response|RedirectResponse
+     * @return Response
      */
     public function destroy(int $id)
     {
@@ -111,6 +88,6 @@ class VacancyController extends Controller
 
         $vacancy->delete();
 
-        return redirect(route('vacancies.index'));
+        return response('Vacancy Deleted', SymfonyResponse::HTTP_NO_CONTENT);
     }
 }

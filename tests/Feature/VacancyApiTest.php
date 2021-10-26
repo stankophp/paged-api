@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Tests\TestCase;
 
-class VacancyTest extends TestCase
+class VacancyApiTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -17,7 +17,7 @@ class VacancyTest extends TestCase
     {
         $vacancy = Vacancy::factory()->make();
 
-        $this->post('/vacancies/', $vacancy->toArray())
+        $this->post('/api/vacancies/', $vacancy->toArray())
             ->assertStatus(SymfonyResponse::HTTP_ACCEPTED);
 
         $this->assertDatabaseHas('vacancies', ['title' => $vacancy->title]);
@@ -31,7 +31,8 @@ class VacancyTest extends TestCase
         $array = $vacancy->toArray();
         $array['title'] = $title;
 
-        $this->patch('/vacancies/' . $vacancy->id, $array);
+        $this->patch('/api/vacancies/' . $vacancy->id, $array)
+            ->assertStatus(SymfonyResponse::HTTP_ACCEPTED);
 
         $this->assertDatabaseHas('vacancies', ['title' => $title]);
     }
@@ -43,7 +44,7 @@ class VacancyTest extends TestCase
 
         $vacancy = Vacancy::factory()->make(['title' => '']);
 
-        $this->post('/vacancies/', $vacancy->toArray())
+        $this->post('/api/vacancies/', $vacancy->toArray())
             ->assertSessionHasErrors('title');
     }
 
@@ -54,7 +55,7 @@ class VacancyTest extends TestCase
 
         $vacancy = Vacancy::factory()->make(['description' => '']);
 
-        $this->post('/vacancies/', $vacancy->toArray())
+        $this->post('/api/vacancies/', $vacancy->toArray())
             ->assertSessionHasErrors('description');
     }
 
@@ -64,7 +65,8 @@ class VacancyTest extends TestCase
         $title = 'Some New Title';
         $vacancy = Vacancy::factory()->create(['title' => $title]);
 
-        $this->delete('/vacancies/' . $vacancy->id);
+        $this->delete('/api/vacancies/' . $vacancy->id)
+            ->assertStatus(SymfonyResponse::HTTP_NO_CONTENT);
 
         $this->assertDatabaseMissing('vacancies', ['title' => $title]);
     }
