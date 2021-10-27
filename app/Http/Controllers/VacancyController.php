@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use \Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class VacancyController extends Controller
@@ -39,11 +40,25 @@ class VacancyController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param VacancyRequest $request
+     * @param Request $request
      * @return Response|RedirectResponse
      */
-    public function store(VacancyRequest $request)
+    public function store(Request $request)
     {
+        $rules = [
+            'title' => ['required', 'min:2', 'max:100',],
+            'description' => ['required', 'min:2', 'max:100000',],
+            'location' => ['required', 'min:2', 'max:100',],
+            'salary' => ['required', 'min:2', 'max:100000', 'numeric'],
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails())
+        {
+            return redirect()->back()->withInput()->withErrors($validator);
+        }
+
         $vacancy = Vacancy::create([
             'title' => $request->input('title'),
             'description' => $request->input('description'),
@@ -51,7 +66,7 @@ class VacancyController extends Controller
             'salary' =>$request->input('salary'),
         ]);
 
-        return redirect(route('vacancies.index'));
+        return redirect(route('vacancies.index'))->with('success', 'Vacancy created successfully!');
     }
 
     /**
@@ -82,13 +97,30 @@ class VacancyController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param VacancyRequest $request
+     * @param Request $request
      * @param  int  $id
      * @return Response|RedirectResponse
      */
-    public function update(VacancyRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $vacancy = Vacancy::findOrFail($id);
+
+        $rules = [
+            'title' => ['required', 'min:2', 'max:100',],
+            'description' => ['required', 'min:2', 'max:100000',],
+            'location' => ['required', 'min:2', 'max:100',],
+            'salary' => ['required', 'min:2', 'max:100000', 'numeric'],
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        dd($validator);
+
+        if ($validator->fails())
+        {
+            dd($validator);
+            return redirect()->back()->withInput()->withErrors($validator);
+        }
+
         $vacancy->update([
             'title' => $request->input('title'),
             'description' => $request->input('description'),
@@ -96,7 +128,7 @@ class VacancyController extends Controller
             'salary' =>$request->input('salary'),
         ]);
 
-        return redirect(route('vacancies.index'));
+        return redirect(route('vacancies.index'))->with('success', 'Vacancy updated successfully!');
     }
 
     /**
@@ -111,6 +143,6 @@ class VacancyController extends Controller
 
         $vacancy->delete();
 
-        return redirect(route('vacancies.index'));
+        return redirect(route('vacancies.index'))->with('info', 'Vacancy deleted successfully!');
     }
 }

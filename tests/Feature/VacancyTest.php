@@ -17,8 +17,7 @@ class VacancyTest extends TestCase
     {
         $vacancy = Vacancy::factory()->make();
 
-        $this->post('/vacancies/', $vacancy->toArray())
-            ->assertStatus(SymfonyResponse::HTTP_ACCEPTED);
+        $this->post('/vacancies/', $vacancy->toArray());
 
         $this->assertDatabaseHas('vacancies', ['title' => $vacancy->title]);
     }
