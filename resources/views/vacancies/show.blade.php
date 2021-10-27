@@ -9,6 +9,11 @@
                         <!-- Post content-->
                         <article>
                             <!-- Post content-->
+                            <div class="card mb-4">
+                                @auth()
+                                    <div class="card-body"><a href="{{ route('vacancies.edit', $vacancy->id) }}" class="btn btn-primary">Edit Vacancy</a></div>
+                                @endauth
+                            </div>
                             <section class="mb-5">
                                 <div class="card bg-light mb-3">
                                     <div class="card-body">

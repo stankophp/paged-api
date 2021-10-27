@@ -113,11 +113,9 @@ class VacancyController extends Controller
         ];
 
         $validator = Validator::make($request->all(), $rules);
-        dd($validator);
 
         if ($validator->fails())
         {
-            dd($validator);
             return redirect()->back()->withInput()->withErrors($validator);
         }
 
